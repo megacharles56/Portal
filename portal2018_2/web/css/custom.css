@@ -1,0 +1,388 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2/05/2018, 01:15:36 PM
+    Author     : develop0
+*/
+
+body .wrap {
+    width: minmax(800px, 1200px) ;
+}
+
+
+
+.test {
+    font-family:  sans-serif;
+}
+
+#gridUno
+{
+    display : grid;
+    grid-template-columns : minmax(  47% 1fr) minmax(47% 1fr);
+    column-gap: 30px;
+    grid-column-gap: 4%;
+    margin:  inherit 1%
+}
+
+
+#gridPanel
+{
+    display : grid;
+    grid-template-columns : minmax(  200px, 1fr  ) minmax(200px, 1fr );
+    column-gap: 30px;
+    grid-column-gap: 4%;
+    margin:  inherit 1%
+}
+
+
+.navGrid{
+    display : grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+}
+
+.profile.icon {
+    color: #000;
+    position: absolute;
+    margin-left: 3px;
+    margin-top: 11px;
+    width: 14px;
+    height: 6px;
+    border-left: solid 1px currentColor;
+    border-right: solid 1px currentColor;
+    border-top: solid 1px currentColor;
+    border-bottom: solid 1px transparent;
+    border-radius: 6px 6px 0 0;
+}
+
+.profile.icon:before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: solid 1px currentColor;
+}
+
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+    position: relative;
+    right: 0;
+    left: 0;
+    z-index: 0;
+
+}
+
+#hr_top
+{
+    border-color: blue;
+    background-color: blue;
+    padding :0;
+    margin: 0;
+    margin-top: 3px
+}
+
+.nav > li {
+    margin-top: .5em;
+}
+
+#w0 li
+{   margin-top: .5em;
+
+}
+.navbar-nav > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#nav_top{
+    margin-bottom: 0
+}
+
+.wrap > .container 
+{
+    padding-top: 0
+}
+
+.headerV
+{    display : grid;
+     grid-template-columns : 30% 70%;
+     column-gap: 10%;
+     grid-column-gap: 5%;    
+}
+
+.headerV>div>h2, h3{ 
+    margin-top: 1px;
+    padding-top: 1px}
+
+
+.btnsCancel
+{
+    display:   grid;
+    grid-template-columns: 1fr 1fr;  
+    grid-column-gap: 10px;
+    text-align: center;
+
+}
+
+.encabezado{
+    grid-column-start :1;
+    grid-column-end :3;
+}
+
+.spTitulo
+{
+    font-size: 2em;
+    font-weight: bold;
+    text-align: right;
+}
+
+.grSPermiso{
+    display:   grid;
+    grid-template-columns: 1fr 1fr;     
+    align-items: center;
+    justify-items: center;
+    color : blue;
+    border: solid 1px brown;
+}
+
+.grid_selec_calendario{
+    width : min-max(400px, 50%);
+    display:   grid;
+    grid-template-columns: 3fr 2fr 1fr;  
+    grid-gap: 10px;
+    align-self: center;
+    width : 50%;   
+    margin-bottom: 5px;
+}
+
+.field-calendarioeventos-fecha, .field-calendarioeventos-ubicacion{
+    margin-bottom: 5px;
+}
+
+.pool{
+    grid-template-columns:  minmax(100px, 1fr);
+}
+
+.calendario{
+    display:   grid;
+
+    grid-gap : 10px;
+    grid-template-columns: repeat( auto-fill, minmax(135px, 220px) );        
+}
+
+.calendario >div{
+    border: ridge 5px  #994d53;
+    padding :  0;
+    border-radius: 15px 15px 0  0;
+}
+
+.calendario .nombre {
+    background-color: lightblue;
+    color: darkblue;
+    font-size: 1.2em;
+    margin-top: 0;
+    border-radius: 10px 10px 0  0;
+    padding :  0px 5px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: solid 1px darkblue
+}
+
+.calendario_inner{
+    text-align: center;
+    padding :  0 5px;    
+    margin: 0 6px }
+
+.calendario_inner:nth-child(even) {
+    background-color: lightgray;
+}
+
+.calendario_inner:nth-child(odd) {
+    background-color: rgb( 230, 230,230);
+}
+
+.calendario_inner:first-child {
+    border-radius: 18px 0 0 0 ;
+}
+
+
+.calendario_inner:last-child {
+    margin-bottom: 5px;
+    border-radius: 0 0 18px 0;
+}
+
+.calendario_inner p{
+    margin-bottom: 5px;
+    font-size: .8em
+}
+
+.calendario_inner p:first-child{
+    font-size: 1em
+}
+
+.calendario_inner .PROPUESTO {
+    color: darkred;
+}
+
+.calendario_inner .estado{
+
+}
+
+.half-scr{
+    width: 50%; 
+    margin: auto;
+}
+
+
+
+/**********************************************************************/
+
+.gridM{
+    display: grid;
+    grid-template-columns: 150px  minmax( 200px, 1fr);  
+    padding: 1% 1%;
+    grid-column-gap:2%
+}
+
+.containerM{
+    display: inline-block
+
+}
+
+.menu_a{
+    /*font-size: 1.2em;
+    padding: 6px;
+    border: 1px #d19b3d solid;
+    border-radius: 14px;
+    color : steelblue;*/
+    
+    font-size: 1.2em;
+    padding: 6px;
+    border: 1px #d19b3d solid;
+    border-radius: 14px;
+    color: steelblue;
+    width: 170px;
+
+}
+
+.menu_a ul li ul {
+    width: 230px;
+}
+
+.menu_a ul li{
+    border-left:  1px #d3e2ed solid;
+    border-right: 1px #d3e2ed solid;
+}
+
+.menu_a ul li:first-child{
+    border-radius: 10px 10px 0 0;
+    border-top:  1px #d3e2ed solid;
+}
+
+.menu_a ul li:last-child{
+    border-radius: 0  0 10px 10px;
+    border-bottom:  1px #d3e2ed solid
+}
+
+.menu_a ul li a, .subMenu{
+    padding-left: 2px;
+    padding-right: 7px;
+    white-space: nowrap;
+
+}
+
+.menu_a ul li {
+    list-style: none;
+}
+
+#nav_v li  {
+    /*padding-left: 2px;
+    padding-right: 7px;
+    background-color: #e3f2fd;
+    list-style: none;*/
+    padding-left: 0px;
+    padding-right: 0px;
+    background-color: #e3f2fd;
+    list-style: none;
+}
+
+#nav_v  li:hover {
+    padding-left: 0px;
+    color: darkblue;
+    font-weight: bold;
+    margin: 0px;
+    background-color: #f3f2fd;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px #d3e2ed solid;
+    /*white-space: pre;*/
+}
+
+#logoMenu{
+    text-align: center;
+}
+
+#nav_v  li:first-child:hover {
+    padding-left: 2px;
+    padding-right: 7px;
+    background-color: #e3f2fd;
+    width :100% ;
+    border-radius : 10px 10px 0  0;
+    border:  inherited;
+    border-bottom: none;
+}
+
+
+#nav_v ul {
+    /*padding-left: 2px;
+    padding-right: 7px;*/
+    
+    padding-left: 2px;
+    padding-right: 0px;
+}
+
+#nav_v {
+    box-sizing: border-box;
+}
+
+.n2 li a{
+    /*margin-left: 15px;*/
+    margin-left: 0px;
+}
+
+.n2{
+    display: none
+}
+
+#btnSalida{
+   /* width:100px;
+    white-space: normal;*/
+    width: 100px;
+    white-space: pre;
+    padding-left: 0px;
+
+}
+
+.gridDosCols
+{
+    display : grid;
+    grid-template-columns : 30% 40%;
+    column-gap: 30px;
+    grid-column-gap: 4%;
+    margin:  inherit 1%
+}
+
+
+.gridDosCols40
+{
+    display : grid;
+    grid-template-columns : minmax(40%, 1fr) minmax(40%, 1fr);
+    grid-column-gap: 4%;
+    margin:  inherit 1%;
+    align-items: center;
+}

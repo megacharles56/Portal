@@ -1,0 +1,147 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2/05/2018, 01:15:36 PM
+    Author     : develop0
+*/
+
+
+.test {
+    font-family:  sans-serif;
+}
+#gridUno
+{
+    display : grid;
+    grid-template-columns : 50% 50%;
+    column-gap: 30px;
+    grid-column-gap: 5%;
+}
+
+.navGrid{
+    display : grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+}
+
+.profile.icon {
+    color: #000;
+    position: absolute;
+    margin-left: 3px;
+    margin-top: 11px;
+    width: 14px;
+    height: 6px;
+    border-left: solid 1px currentColor;
+    border-right: solid 1px currentColor;
+    border-top: solid 1px currentColor;
+    border-bottom: solid 1px transparent;
+    border-radius: 6px 6px 0 0;
+}
+
+.profile.icon:before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: solid 1px currentColor;
+}
+
+.myTooltipClass + .tooltip > .tooltip-inner {background-color: #ff0;}
+.myTooltipClass + .tooltip > .tooltip-arrow { border-bottom-color:#ff0; }
+
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+
+    position: relative;
+
+    right: 0;
+    left: 0;
+
+    z-index: 0;
+}
+
+
+.navbar-nav > li > a {
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+}
+
+#nav_top{
+    margin-bottom: 0
+}
+
+.wrap > .container 
+{
+    padding-top: 60px
+
+}
+
+.headerV
+{    display : grid;
+     grid-template-columns : 30% 70%;
+     column-gap: 10%;
+     grid-column-gap: 5%;    
+}
+
+.headerV>div>h2, h3{ 
+    margin-top: 1px;
+    padding-top: 1px}
+
+#nav_top{
+    top: 2px !important;
+}
+
+#nav_bottom{
+    top: 36px !important;
+    padding-top: 0;
+    min-height: 32px;
+    height: 32px; 
+}
+
+#w2> li> a{
+
+    padding: 0 10px;
+}
+
+#w1 > li > a
+{padding-top: 0}
+
+.btnsCancel
+{
+    display:   grid;
+    grid-template-columns: 1fr 1fr;  
+    grid-column-gap: 10px;
+    text-align: center;
+
+}
+
+.encabezado{
+    grid-column-start :1;
+    grid-column-end :3;
+}
+
+.spHead{
+
+}
+
+.spTitulo
+{
+    font-size: 2em;
+    font-weight: bold;
+    text-align: right;
+}
+
+.grSPermiso{
+    display:   grid;
+    grid-template-columns: 1fr 1fr;     
+    align-items: center;
+    justify-items: center;
+    color : blue;
+    border: solid 1px brown;
+}

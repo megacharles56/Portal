@@ -1,0 +1,386 @@
+/*************************** Reglas   ******************************************
+  Cada tabla tiene como prefijo cinco letras
+  el prefijo se separa del campo mediante un subguion
+  los nombres de tabla van en plural (siempre que sea posible)
+  Para tablas con nombres compuestos de dos palabras se usan iniciales de 
+  ambas.
+   
+  La llave de las tablas es el campo 
+     <<prefijo_id>>
+  
+  Los nombres de las restricciones NOT NUll son <<campo_NN>>
+  Los nombres de las restricciones de llave primaria son <<prefijo_key>>   
+  Los nombres de las restricciones de liga son 
+     <<prefijo_campo_origen_lnk_prefijoTablaDestino>>
+   
+  Todas las tablas llevan los campos
+     Estado      tid       Estado Actual del registro, llevara default 1
+     Autor       Tid       Persona que inserto-modifico el registro debe existir
+           <<usua_modif_NN>> 
+     modificacion TimeStamp Fecha de la ultima operacion sobre el registro
+                            Se revisa en insert y en update, si es nulo se 
+                            procede a ponerlo, si no se emplea el que venga                            
+     
+  tablas selectas llevaran un campo blob <<historia>> en el se guardara la 
+  fecha la persona y el o los campos modificados con el valor anterior, no 
+  se guarda el valor nuevo por que este es el que queda en el registro 
+  modificado.     
+  
+  en dichas tablas se tendra un trigger 
+  <<prefijo_historic>>  on update 0              
+  se almacenaran los cambios en xml
+  
+ ::::::::::::::::::::::::::::::::::::::::::::
+<Modificacion>  
+<Fecha>02/05/2014 10:10</Fecha>
+<Autorid>Id </Autorid>
+<Autornombre>Nombre</Autornombre>
+<Cambio>
+<Nombrecampo>Campo1</Nombrecampo>
+<Valorcampo>Valor1</Valorcampo>
+</Cambio>                                           
+<Cambio>
+<Nombrecampo>Campo2</Nombrecampo>
+<Valorcampo>Valor2</Valorcampo>
+</Cambio>
+<Cambio>
+<Nombrecampo>Camp3</Nombrecampo>
+<Valorcampo>Valor</Valorcampo>
+</Cambio>
+</Modificacion>
+:::::::::::::::::::::::::::::::::::::::::::::
+
+esta organizacion permitiria la lectura en un lector xml agregando al final 
+</Modificaciones>
+
+Algoritmo :
+   separador = '';
+   Temporal  = ''
+   For Each Campo
+      Si Cambia
+        Temporal = Temporal + Separador + 
+                   <Cambio> + Crlf +
+                   <Nombrecampo>+Nombrecampo+</Nombrecampo>+Crlf +
+                   <Valorcampo>+
+                   Coalesce(Old.Campo, 'vacio')+</Valorcampo>+Crlf
+                   </Cambio>
+        Separador = Crlf
+   If Temporal <> ''
+      Select Pers_Nombre From Personas Where Pers_Id = Old.Pers_Id Into :Nombre 
+      Temporal = <Modificacion>crlf +
+                 <Fecha> +Old.Fecha +</Fecha> +Crlf+
+                 <Autorid>+Old.Perso_Id</Autorid>+Crlf+ 
+                 <AutorNombre>+:nombre+</AutorNombre>+Crlf+
+                 Temporal;
+      if old.Historia is null then
+         new.Historia = <?xml version="1.0" encoding="windows-1250"?>+ crlf
+                        <Modificaciones> + crlf + 
+                        temporal;
+      else
+         new.Historia = crlf + temporal
+      new.Historia = new.Historia + </Modificacion>  
+   else
+      levanta excepcion    
+      
+ el ciclo por limitaciones de lenguaje se debe hacer campo por campo
+ en el campo de comentarios de la tabla se pondra el nombre amigable del campo 
+ en una siguiente etapa  
+
+ El generador del campo llave sera <<Prefijo_id_gen>>    
+     
+ El trigger de alta <<prefijo_alta>>  para insert en posicion 0
+ si se requieren mas se haran agregando texto descriptivo, 
+ 
+ el primero de existir para cambios sera <<prefijo_modif>> 
+  
+ se tendra un SP  para obtener cada generador <<Prefijo_Key_Gen>>
+  
+Cuando se tenga una tabla con foreign references es conveniente generar 
+una vista <<vNombreTabla>> o <<vNombreDescriptivo>>
+
+Se manejaran vistas en cada pantalla y para tablas con muchos campos se 
+pueden manejar vistas "cortas"
+
+Cuando se tiene una tabla que se refiere a un ente nominativo se usara la 
+palabra nombre p. ej
+Departamento    depto_nombre, Direccion  direc_nombre
+
+  
+/******************************************************************************/
+/********************* Dominios ***********************************************/
+/******************************************************************************/
+  
+  create Domain tsNombre  as varChar(24);
+  create domain tsNombreC as varChar(12);
+  Create Domain tsNombreL as varChar(48);
+  Create Domain tsNombreXL as varChar(128);
+  Create Domain Tid As Integer;
+
+CREATE DOMAIN TMONETARIO
+ AS Numeric(9,2)
+
+/******************************************************************************/
+Competencias = 1{competencia}n
+Competencia = <compe> ?@Pues_id? + ?Nivel_puesto? + @Empl +
+               _Comp_resultado + _educacion + _especialidad +
+               _expe_interna + _expe_externa + _Expe_resultado + 
+               _expe_Especialidad + _form_nombre + _form_fecha + 
+               _form_especifico + _form_general + _form_resultado +
+               _habi_trabajo_equipo + _habi_satisfaccion_cliente + 
+               _habi_comunicacion_interna + _habi_liderazgo
+                
+<comp>  = prefijo para los campos de la tabla
+
+Puest_id               = información del puesto    
+                        ?Ya se tiene por la informacion del usuario?
+?Nivel_puesto?        = ?Ya se tiene por la informacion del puesto?
+@Emple                 = informacion del empleado a valorar
+_Comp_resultado       = [MB = Competencia| B = Suficiente| S = Insuficiente]  
+                        *calificacion general de competencia 
+_educacion            = Educacion escolarizada maxima
+_especialidad         = area del conocimiento que se estudio en _educacion +
+_expe_interna         = tiempo en años y meses que tiene el empleado en la 
+                        institucion en este puesto
+_expe_externa         = tiempo en años y meses que tiene el empleado fuera 
+                        de la institucion en este puesto 
+_Expe_resultado       = [MB = Competencia| B = Suficiente| S = Insuficiente]   
+                         *calificacion general de experiencia*
+_expe_Especialidad    = especialidad en la que el empleado tiene 
+                        _expe_interna y/o _expe_externa 
+_form_nombre          = Nombre de cursos tomados
+_form_fecha           = fecha de cursos tomados   
+_form_especifico      = indica si el curso es especifico al area del puesto
+_form_general         = indica si el curso es general
+_form_resultado       = [MB = Competencia| B = Suficiente| S = Insuficiente]   
+                        *calificacion general de formacion*
+_habi_trabajo_equipo  = [MB = Competencia| B = Suficiente| S = Insuficiente]     
+_habi_satisf_cliente  = [MB = Competencia| B = Suficiente| S = Insuficiente]    
+_habi_comunic_interna = [MB = Competencia| B = Suficiente| S = Insuficiente]    
+_habi_liderazgo       = [MB = Competencia| B = Suficiente| S = Insuficiente]  
+                    
+Requiere las tablas de  :
+   empleados
+   ?puestos?                  
+/******************************************************************************/
+Perfiles_puesto       = 1{Perfil_puesto}n
+Perfil_puesto         = <perpu> nombre + reporta_a + ?direccion_gerencia?+
+                        genero + estado_civil + edad_minima + edad_maxima +
+                        expe_interna + expe_externa + expe_en_especialidad + 
+                        escolaridad + esco_especialidad	+
+                        0{ @formacion_perfil }6 + 0{@habilidad_perfil}6 + 
+                        objetivo + 1{@funciones_perfil}10  + 
+                        1{@Releaciones_Perfil}5
+
+<perpu> = prefijo para los campos de la tabla
+nombre                = *nombre del puesto+ 
+reporta_a             = @Perfiles de puesto
+ 
+?direccion_gerencia?  = direcion o gerencia a la que reporta
+                        ? cambia de acuerdo al esquema nuevo de organigrama
+genero                = [MASCULINO|FEMENINO|INDISTINTO] 
+estado_civil          = [CASADO|SOLTERO|INDISTINTO]
+edad_minima           = en años
+edad_maxima           = en años 
+expe_interna          = tiempo de experiencia en la institucion en años y meses
+expe_externa          = tiempo de experiencia fuera de  la institucion 
+                        en años y meses 
+expe_en_especialidad  = Especialidad en la que debe tener experiencia
+escolaridad           = [BASICA|MEDIA SUPERIOR|SUPERIOR]
+esco_especialidad	    = area en que se tiene estudio escolarizado
+@formacion_perfil     = foper_id referencia a la tabla formacion_perfil
+@habilidad_perfil     = haper_id referencia a la tabla de habilidad_perfil
+objetivo              = texto 
+@funciones_perfil     = Fuper_id referencia a la tabla de funciones_perfil 
+@Relaciones_Perfil    = reper_id referencia a la tabla de relaciones_perfil                      
+
+formacion_perfil      = <foper> + nombre
+                        *cursos tomados*
+habilidad_perfil      = <haper>
+                        *p. ej h
+                            Trabajo en equipo, Satisfacción del cliente, 
+                            Comunicación,Liderazgo
+funciones_perfil      = <Fuper> funciones que desempeña el puesto 
+Relaciones_Perfil     = <reper> Relaciones externas                      
+/******************************************************************************/
+Personas   = 1{persona}n
+
+Persona    =  /* Es un componente de empleado deben ir 1 a 1*/
+              <perso> Nombre1 + ((Nombre2) + (Nombre3)) + 
+              Paterno + (Materno) + Titulo +
+              (Sobrenombre) + (Rfc) + (Curp) + #Nombre + 
+              Nacionalidad + Fecha_Nacimiento + Sexo + 
+              1{domicilio}n + 1{correo}n + 1{telefono}n
+
+Nombre1      = Nombre de pila  
+Nombre2      = Segundo nombre de la persona  es opcional
+Nombre3      = Tercer nombre de pila en caso de tenerlo
+Paterno      = Apellido Paterno
+Materno      = Apellido Materno
+Titulo       = Titulo p.ej Sr, Lic
+Sobrenombre  = 
+Rfc          = Registro Federal de contribuyentes
+Curp         = Clave unica registro poblacion 
+Nombre       = Campo CALCULADO con la concatenacion de Nombres
+Nacionalidad = texto indicando la nal.
+Fecha_Nacimiento =  
+Sexo         =   [MASCULINO|FEMENINO]
+
+/******************************************************************************/
+Domicilios   = 1{Domicilio}n                        
+Domicilios   = <Domic> Historia + Calle_Num + Domi_Colonia + Codpo_Id + @Perso_id
+
+Calle_Num    = Texto indicando ambos datos, de existir se añade el numero interior
+Domi_Colonia = Texto, se copia de la tabla de codigos postales y/o se genera 
+Codpo_Id     = Liga a codigos postales
+   
+/******************************************************************************/
+Codigos_Postales = 1{Codigo_Postal}n
+Codigo_Postal = <codpo> + Colonia + Cp + @Delmu_Id
+Colonia       = Nombre de la colonia de sepomex
+Cp            = Codigo postal de sepomex
+/******************************************************************************/
+Delmu_Id      = liga a la tabla delegaciones_municipios
+Delegacion_municipio  = <DelMu> + Nombre + Clave
+                        
+/******************************************************************************/
+Estado_Rep    =  <Esrep> + Nombre
+                        1{domicilio}n + 1{correo}n + 1{telefono}n
+                        1{domicilio}n + 1{correo}n + 1{telefono}n                        
+
+/******************************************************************************/
+Correo        = <Corre> + Principal + Direccion + Dominio + Tipo + 
+                Corr_Correo + Perso_Id
+
+Principal     = Indica si es el correo principal de la persona
+Direccion     = Es la direccion del correo (antes de @)
+Dominio       = Lugar donde se hospeda el correo ( despés del arroba)
+Tipo          = Se pueden categorizar los correos, esta es una liga a variables 
+               [tabla Correos campo tipo]
+Corr_Correo   = Campo CALCULADO concatenando los anteriores y arroba   
+Perso_Id      = Persona a la que pertenece el correo
+
+/******************************************************************************/
+Telefonos     = 1{telefono}n
+Telefono      =  <telef> historico + @tipo + Principal + 
+                (prefijo) + (lada) + (numero) + (extension) + tele_telefono + 
+                @perso_id      
+
+Tipo          = Se pueden categorizar los telefonos, esta es una liga a 
+                variables [tabla Correos campo tipo]
+Principal     = Indica si es el correo principal de la persona
+prefijo       = 
+lada          = clave de larga distancia
+numero        = numero a 10 digitos
+extension     = se resrvan 6 digitos para extension
+tele_telefono = Campo CALCULADO con los numeros disponibles
+perso_id      = Persona a la que pertenece el teléfono
+
+/******************************************************************************/
+Empleados  = 1{Empleado}  
+Empleado = /*persona que trabaja en camara */
+           <emple>  @perso_id + historico + num_nomina + @perpu_id +
+           @categoria + horario + Jornada_semanal + Clave_sistemas +
+           usuario +
+           descanso_semanal + terminacion_Contrato +
+           lugar_Trabajo + Pago
+           
+ perso_id        = persona que tiene el empleo          
+ num_nomina      = numero de nomina se relaciona con control
+ perpu_id        = Perfil de peusto que tiene
+ horario         = texto indicando los horarios de labores
+ Jornada_semanal = numwero de horas que se laboran, es un numero real 
+ Clave_sistemas  = clave para acceder a los programas de camara, default 
+                    es el numero de nomina
+ Usuario         =  nombre con el que el empleado accesa el portal, 
+                    por default es el numero de nomina
+                    
+descanso_semanal = texto indicando los dias que no se labora
+terminacion_Contrato = fecha de ternmminacion de contrato
+lugar_Trabajo    = texto indicando el lugar normal de trabajo, 
+                   pej delegacion
+Pago             = sueldo ?mensual semanal?           
+
+/******************************************************************************/
+labels = <label> + tabla + campo
+
+/******************************************************************************/
+EstructuraOrganica = <estOr> historico + nombre + @tipoEstructura +  
+                     @Estco_id + @superior
+                     
+nombre          = nombre de la estructura 
+tipoEstructura  = [Direccion|Jefatura|Gerencia] tabla de valores   
+Estco_id        = Estructura de coontabilidad a la que se refiere
+superior        = estructura superior a la misma                     
+                     
+/******************************************************************************/
+EstructuraContable = <EstCo> nombre + numero
+
+/******************************************************************************/
+Aplicaciones    = <aplic> Nombre + Version
+ 
+aplicaciones_usuario = <aplus> + Aplic_Id + emple_Id
+
+
+
+
+/*Requisicion de personal*/
+
+Requisiciones = 1{requisicion}n
+
+Requisicion = <Requi> Fecha+autor+Num_plazas+Motivo + Perfil + reemplaza_a +
+              creacion + otro +observaciones  
+* no se considera dar dew lata el puesto en su caso si es de nueva   creacion se * 
+* le pondra nueva creacion y en ese momento se le pedira que cree el nuevo puesto
+* y se iniciara el intercambio de opiniones entre RH y Direccion general*              
+              
+              
+
+
+
+
+
+
+
+
+
+consulta para campos
+SELECT DISTINCT CAMPOS.RDB$FIELD_NAME AS COLUMN_NAME, 
+ FROM 
+   RDB$RELATIONS TABELAS, RDB$RELATION_FIELDS CAMPOS, RDB$FIELDS 
+   DADOSCAMPO, RDB$TYPES TIPOS 
+ WHERE TABELAS.RDB$RELATION_NAME = :nombre_tabla 
+   AND TIPOS.RDB$FIELD_NAME = 'RDB$FIELD_TYPE' 
+   AND TABELAS.RDB$RELATION_NAME = CAMPOS.RDB$RELATION_NAME 
+   AND CAMPOS.RDB$FIELD_SOURCE = DADOSCAMPO.RDB$FIELD_NAME 
+   AND DADOSCAMPO.RDB$FIELD_TYPE = TIPOS.RDB$TYPE 
+   ORDER BY CAMPOS.RDB$FIELD_POSITION
+   
+   
+   consulta para constraints
+   
+   SELECT rc.RDB$CONSTRAINT_NAME,
+s.RDB$FIELD_NAME AS field_name,
+rc.RDB$CONSTRAINT_TYPE AS constraint_type,
+i.RDB$DESCRIPTION AS description,
+rc.RDB$DEFERRABLE AS is_deferrable,
+rc.RDB$INITIALLY_DEFERRED AS is_deferred,
+refc.RDB$UPDATE_RULE AS on_update,
+refc.RDB$DELETE_RULE AS on_delete,
+refc.RDB$MATCH_OPTION AS match_type,
+i2.RDB$RELATION_NAME AS references_table,
+s2.RDB$FIELD_NAME AS references_field,
+(s.RDB$FIELD_POSITION + 1) AS field_position
+FROM RDB$INDEX_SEGMENTS s
+LEFT JOIN RDB$INDICES i ON i.RDB$INDEX_NAME = s.RDB$INDEX_NAME
+LEFT JOIN RDB$RELATION_CONSTRAINTS rc ON rc.RDB$INDEX_NAME = s.RDB$INDEX_NAME
+LEFT JOIN RDB$REF_CONSTRAINTS refc ON rc.RDB$CONSTRAINT_NAME = refc.RDB$CONSTRAINT_NAME
+LEFT JOIN RDB$RELATION_CONSTRAINTS rc2 ON rc2.RDB$CONSTRAINT_NAME = refc.RDB$CONST_NAME_UQ
+LEFT JOIN RDB$INDICES i2 ON i2.RDB$INDEX_NAME = rc2.RDB$INDEX_NAME
+LEFT JOIN RDB$INDEX_SEGMENTS s2 ON i2.RDB$INDEX_NAME = s2.RDB$INDEX_NAME
+WHERE i.RDB$RELATION_NAME='b'       -- table name
+AND rc.RDB$CONSTRAINT_NAME='FK_b' -- constraint name
+AND rc.RDB$CONSTRAINT_TYPE IS NOT NULL
+ORDER BY s.RDB$FIELD_POSITION
+
+
+
